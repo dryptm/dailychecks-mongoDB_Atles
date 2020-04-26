@@ -13,9 +13,7 @@ app.set('view engine', 'ejs');
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb+srv://dryptm:vinay26k@cluster0-ildsz.mongodb.net/todolistDB", {
-    useNewUrlParser: true
-});
+
 
 const itemsSchema = {
     name: String
@@ -35,32 +33,7 @@ const listSchema={
 const List=mongoose.model("List",listSchema);
 
 
-app.get("/:customListname",function(req,res){
-    const customListname=lodash.capitalize(req.params.customListname);
-    console.log(customListname);
-    
-    List.findOne({name :customListname},function(err,foundlist){
-        if(!err){
-            if(foundlist)
-            {
-                console.log("exists")
-                res.render("list", {list_title: foundlist.name,new_item: foundlist.items})
-            }
-            else
-            {   
-                console.log("doesnt exist")
-                const list=new List({
-                    name :customListname,
-                    items:[]
-                })
-                list.save();
-                res.redirect("/"+customListname);
-               
-            }
-        }
-    })
-    
-})
+
 
 
 app.get("/", function (req, res) {
@@ -70,13 +43,35 @@ app.get("/", function (req, res) {
             list_title: "Today",
             new_item: founditems
         })
-    })
-
-    
-    
-   
+    })   
 });
-
+app.get("/:customListname",function(req,res){
+    const customListname=lodash.capitalize(req.params.customListname);
+    console.log(customListname);
+    
+    List.findOne({name :customListname},function(err,foundlist){
+        if(!err){
+            if(foundlist)
+            {
+                console.log("exists");
+                res.render("list", {list_title: foundlist.name,new_item: foundlist.items})
+            }
+            else
+            {   
+                console.log("doesnt exist")
+                const list=new List({
+                    name :customListname,
+                    items:[]
+                })
+                list.save().then(function(){
+                    res.redirect("/"+customListname);
+                });
+               
+            }
+        }
+    })
+    
+})
 app.post("/", function (req, res) {
         var a = req.body.input;
        
@@ -136,7 +131,9 @@ app.post("/delete", function (req, res) {
 })
 
 
-
+mongoose.connect("mongodb+srv://dryptm:vinay26k@cluster0-ildsz.mongodb.net/todolistDB", {
+    useNewUrlParser: true
+});
 app.listen(process.env.PORT || 3000, function () {
     console.log("server started at 3000");
 });
