@@ -131,7 +131,7 @@ app.post("/delete", function (req, res) {
 })
 
 
-mongoose.connect("mongodb+srv://dryptm:vinay26k@cluster0-ildsz.mongodb.net/todolistDB", {
+mongoose.connect("mongodb+srv://<your personal mongodb cluster>cluster0-ildsz.mongodb.net/todolistDB", {
     useNewUrlParser: true
 });
 app.listen(process.env.PORT || 3000, function () {
